@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.dao.TodoDAO">
+
+	<select id="todoList" resultType="TodoVO">
+		select
+		id,
+		title,
+		checked,
+		TO_CHAR(reg_date, 'YYYY-MM-DD HH24:MI:SS') regDate
+		from TODO
+		where DELETE_YN = 'N'
+	</select>
+
+	<insert id="insert"
+		parameterType="com.example.demo.vo.TodoVO">
+		<selectKey keyProperty="id" resultType="java.lang.Integer"
+			order="AFTER">
+			SELECT TODO_SEQ.CURRVAL FROM DUAL
+		</selectKey>
+		insert into todo (id, title, checked) values (TODO_SEQ.nextval,
+		#{title}, #{checked})
+	</insert>
+
+	<update id="modifyList"
+		parameterType="com.example.demo.vo.TodoVO">
+		UPDATE TODO
+		<set>
+			<if test="title != null and title != ''">
+				title = #{title},
+			</if>
+			<if test="checked != null">
+				checked = #{checked},
+			</if>
+			mod_date = sysdate
+		</set>
+		WHERE id = #{id}
+	</update>
+
+
+	<update id="removeList" parameterType="com.example.demo.vo.TodoVO">
+		update TODO set
+		delete_date = sysdate,
+		delete_yn = 'Y'
+		where id = #{id}
+	</update>
+
+
+
+</mapper>
